@@ -17,3 +17,8 @@ ifeq ($(TARGET_USE_DCDIMMING),true)
 PRODUCT_PACKAGES += \
     DcDimming
 endif
+ifeq ($(TARGET_USE_KPROFILES),true)
+PRODUCT_PACKAGES += \
+    KProfiles \
+    init.kprofiles.rc
+endif
