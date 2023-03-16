@@ -47,3 +47,10 @@ allow parts_app vendor_sysfs_displayfeature:dir { search read open getattr };
 allow parts_app vendor_sysfs_displayfeature:file { read open getattr write };
 allow parts_app sysfs_disp_param:file rw_file_perms;
 allow parts_app sysfs_kprofiles:file rw_file_perms;
+
+# dont allow devicesettings_app to access some rendering and resampling props
+# persist.input.velocitytracker.strategy
+# renderthread.skia.reduceopstasksplitting
+# ro.input.resampling
+# viewroot.profile_rendering
+dontaudit parts_app default_prop:file read;
