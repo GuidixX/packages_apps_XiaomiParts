@@ -1,1 +1,1 @@
-# Partsuser=system seinfo=platform isPrivApp=true name= domain=parts_app type=system_app_data_file levelFrom=all
+user=system seinfo=platform isPrivApp=true name=com.android.clearspeaker domain=parts_app type=system_app_data_file levelFrom=all
