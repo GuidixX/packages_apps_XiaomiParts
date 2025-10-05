@@ -1,0 +1,3 @@
+on boot
+    chown system system /sys/class/touch/touch_dev/panel_orientation
+    chmod 0664 /sys/class/touch/touch_dev/panel_orientation

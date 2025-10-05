@@ -21,3 +21,7 @@ ifeq ($(TARGET_USE_KPROFILES),true)
 PRODUCT_PACKAGES += \
     KProfiles
 endif
+ifeq ($(TARGET_SUPPORTS_EDGEREJECTION),true)
+PRODUCT_PACKAGES += \
+    PanelOrientation
+endif
