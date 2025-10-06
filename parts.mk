@@ -13,3 +13,7 @@ ifeq ($(TARGET_USE_SATURATIONSLIDER),true)
 PRODUCT_PACKAGES += \
     Saturation
 endif
+ifeq ($(TARGET_USE_DCDIMMING),true)
+PRODUCT_PACKAGES += \
+    DcDimming
+endif
