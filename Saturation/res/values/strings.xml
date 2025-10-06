@@ -11,6 +11,15 @@
     <string name="tile_not_added">Tile not added</string>
     <string name="tile_already_added">Tile already added</string>
 
+    <!-- Per-app saturation -->
+    <string name="per_app_title">Per-app saturation</string>
+    <string name="per_app_enable">Use per-app saturation</string>
+    <string name="per_app_summary">Override global saturation per application</string>
+    <string name="per_app_all_on">Enabled by default for all apps</string>
+    <string name="per_app_search">Search apps</string>
+    <string name="per_app_empty">No apps found</string>
+    <string name="per_app_tile">Per-app saturation</string>
+
     <!-- Custom seekbar -->
     <string name="custom_seekbar_value">Value: <xliff:g id="v">%s</xliff:g></string>
     <string name="custom_seekbar_default_value">by default</string>

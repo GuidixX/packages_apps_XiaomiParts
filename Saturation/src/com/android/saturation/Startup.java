@@ -49,6 +49,18 @@ public class Startup extends BroadcastReceiver {
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 Log.d(TAG, "Applying saved saturation setting...");
                 applySavedSaturation(context);
+                // Start per-app monitor if enabled
+                try {
+                    boolean perApp = PreferenceManager.getDefaultSharedPreferences(context)
+                        .getBoolean(Constants.KEY_PER_APP_ENABLED, false);
+                    if (perApp) {
+                        Intent svc = new Intent();
+                        svc.setClassName(context, "com.android.saturation.SaturationPerAppService");
+                        context.startService(svc);
+                    }
+                } catch (Throwable t) {
+                    Log.e(TAG, "Failed to start per-app service", t);
+                }
             }, 5000); // Delay of 5 seconds
         }
     }

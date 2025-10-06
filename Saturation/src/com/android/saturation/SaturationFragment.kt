@@ -27,10 +27,12 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.content.Intent
 import android.widget.ImageView
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
+import com.android.settingslib.widget.MainSwitchPreference
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.android.settingslib.widget.LayoutPreference
@@ -48,6 +50,7 @@ class SaturationFragment : PreferenceFragmentCompat(), Preference.OnPreferenceCh
     private var mViewPagerImages: Array<View?>? = null
     private var mSaturationPreference: CustomSeekBarPreference? = null
     private var mSurfaceFlinger: IBinder? = null
+    private var mPerAppSwitch: MainSwitchPreference? = null
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.saturation, rootKey)
@@ -59,6 +62,19 @@ class SaturationFragment : PreferenceFragmentCompat(), Preference.OnPreferenceCh
         val sharedPrefs = context?.let { PreferenceManager.getDefaultSharedPreferences(it) }
         mSaturationPreference = findPreference(Constants.KEY_SATURATION)
         mSaturationPreference?.setOnPreferenceChangeListener(this)
+
+        mPerAppSwitch = findPreference("per_app_saturation_enabled")
+        mPerAppSwitch?.addOnSwitchChangeListener { _, isChecked ->
+            PreferenceManager.getDefaultSharedPreferences(requireContext())
+                .edit().putBoolean(Constants.KEY_PER_APP_ENABLED, isChecked).apply()
+            val svc = Intent(requireContext(), SaturationPerAppService::class.java)
+            if (isChecked) requireContext().startService(svc) else requireContext().stopService(svc)
+        }
+
+        findPreference<Preference>("per_app_saturation_manage")?.setOnPreferenceClickListener {
+            startActivity(Intent(requireContext(), PerAppSaturationActivity::class.java))
+            true
+        }
 
         val seekBarValue = sharedPrefs?.getInt(Constants.KEY_SATURATION, 100) ?: 100
         updateSaturation(seekBarValue)
@@ -78,16 +94,21 @@ class SaturationFragment : PreferenceFragmentCompat(), Preference.OnPreferenceCh
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (item.itemId == R.id.add_tile) {
-            TileUtils.requestAddTileService(
-                context,
-                SaturationTileService::class.java,
-                R.string.saturation_title,
-                R.drawable.ic_saturation_tile
-            )
-            true
-        } else {
-            super.onOptionsItemSelected(item)
+        return when (item.itemId) {
+            R.id.add_tile -> {
+                TileUtils.requestAddTileService(
+                    context,
+                    SaturationTileService::class.java,
+                    R.string.saturation_title,
+                    R.drawable.ic_saturation_tile
+                )
+                true
+            }
+            R.id.open_per_app -> {
+                startActivity(Intent(requireContext(), PerAppSaturationActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
