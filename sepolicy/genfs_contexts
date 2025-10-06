@@ -7,3 +7,6 @@ genfscon sysfs /kernel/kprofiles/kp_mode                                        
 
 # Panel Orientation
 genfscon sysfs /devices/virtual/touch/touch_dev/panel_orientation                                            u:object_r:vendor_sysfs_sensors:s0
+
+# Edge Rejection
+genfscon sysfs /devices/virtual/touch/touch_dev/grip_rejection                                               u:object_r:vendor_sysfs_sensors:s0
