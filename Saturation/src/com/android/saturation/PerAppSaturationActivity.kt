@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 The LineageOS Project
+ * Copyright (C) 2025 GuidixX
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package com.android.saturation;
+package com.android.saturation
 
-public class Constants {
+import android.os.Bundle
+import com.android.settingslib.collapsingtoolbar.CollapsingToolbarBaseActivity
 
-    // Saturation
-    public static final String KEY_SATURATION = "saturation";
-    public static final String KEY_SATURATION_PREVIEW = "saturation_preview";
-
-    // Per-app saturation
-    public static final String KEY_PER_APP_ENABLED = "per_app_saturation_enabled";
-    public static final String KEY_PER_APP_DISABLED_PACKAGES = "per_app_saturation_disabled_packages"; // StringSet
+class PerAppSaturationActivity : CollapsingToolbarBaseActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        supportFragmentManager.beginTransaction().replace(
+            com.android.settingslib.collapsingtoolbar.R.id.content_frame,
+            PerAppSaturationFragment(),
+            "PerAppSaturation"
+        ).commit()
+    }
 }
+

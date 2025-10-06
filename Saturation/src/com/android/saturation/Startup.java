@@ -49,6 +49,18 @@ public class Startup extends BroadcastReceiver {
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 Log.d(TAG, "Applying saved saturation setting...");
                 applySavedSaturation(context);
+                // Start per-app monitor if enabled
+                try {
+                    boolean perApp = PreferenceManager.getDefaultSharedPreferences(context)
+                        .getBoolean(Constants.KEY_PER_APP_ENABLED, false);
+                    if (perApp) {
+                        Intent svc = new Intent();
+                        svc.setClassName(context, "com.android.saturation.SaturationPerAppService");
+                        context.startService(svc);
+                    }
+                } catch (Throwable t) {
+                    Log.e(TAG, "Failed to start per-app service", t);
+                }
             }, 5000); // Delay of 5 seconds
         }
     }
@@ -56,10 +68,15 @@ public class Startup extends BroadcastReceiver {
     private void applySavedSaturation(Context context) {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         int seekBarValue = sharedPrefs.getInt(Constants.KEY_SATURATION, 100);
-        Log.d(TAG, "Retrieved seekBarValue: " + seekBarValue);
+        boolean perAppEnabled = sharedPrefs.getBoolean(Constants.KEY_PER_APP_ENABLED, false);
+        Log.d(TAG, "Retrieved seekBarValue: " + seekBarValue + ", perAppEnabled: " + perAppEnabled);
 
-        // Apply the saved saturation value
-        applySaturation(seekBarValue);
+        // Only apply saturation directly if per-app mode is disabled
+        if (!perAppEnabled) {
+            applySaturation(seekBarValue);
+        } else {
+            Log.d(TAG, "Per-app mode enabled, skipping direct saturation application");
+        }
     }
 
     private void applySaturation(int seekBarValue) {

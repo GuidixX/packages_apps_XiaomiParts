@@ -22,15 +22,18 @@ import android.os.IBinder
 import android.os.Parcel
 import android.os.RemoteException
 import android.os.ServiceManager
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.content.Intent
 import android.widget.ImageView
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
+import com.android.settingslib.widget.MainSwitchPreference
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.android.settingslib.widget.LayoutPreference
@@ -48,6 +51,7 @@ class SaturationFragment : PreferenceFragmentCompat(), Preference.OnPreferenceCh
     private var mViewPagerImages: Array<View?>? = null
     private var mSaturationPreference: CustomSeekBarPreference? = null
     private var mSurfaceFlinger: IBinder? = null
+    private var mPerAppSwitch: MainSwitchPreference? = null
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.saturation, rootKey)
@@ -60,8 +64,25 @@ class SaturationFragment : PreferenceFragmentCompat(), Preference.OnPreferenceCh
         mSaturationPreference = findPreference(Constants.KEY_SATURATION)
         mSaturationPreference?.setOnPreferenceChangeListener(this)
 
+        mPerAppSwitch = findPreference("per_app_saturation_enabled")
+        mPerAppSwitch?.addOnSwitchChangeListener { _, isChecked ->
+            PreferenceManager.getDefaultSharedPreferences(requireContext())
+                .edit().putBoolean(Constants.KEY_PER_APP_ENABLED, isChecked).apply()
+            val svc = Intent(requireContext(), SaturationPerAppService::class.java)
+            if (isChecked) requireContext().startService(svc) else requireContext().stopService(svc)
+        }
+
+        findPreference<Preference>("per_app_saturation_manage")?.setOnPreferenceClickListener {
+            startActivity(Intent(requireContext(), PerAppSaturationActivity::class.java))
+            true
+        }
+
         val seekBarValue = sharedPrefs?.getInt(Constants.KEY_SATURATION, 100) ?: 100
-        updateSaturation(seekBarValue)
+        val perAppEnabled = sharedPrefs?.getBoolean(Constants.KEY_PER_APP_ENABLED, false) ?: false
+        
+        if (!perAppEnabled) {
+            updateSaturation(seekBarValue)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -71,23 +92,37 @@ class SaturationFragment : PreferenceFragmentCompat(), Preference.OnPreferenceCh
     override fun onPreferenceChange(preference: Preference, newValue: Any?): Boolean {
         if (preference == mSaturationPreference) {
             val seekBarValue = newValue as Int
-            updateSaturation(seekBarValue)
+            val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+            val perAppEnabled = prefs.getBoolean(Constants.KEY_PER_APP_ENABLED, false)
+            
+            if (perAppEnabled) {
+                // Per-app mode is enabled, don't apply directly - let the service handle it
+                Log.d("SaturationFragment", "Per-app enabled, not applying saturation directly")
+            } else {
+                // Normal mode, apply directly
+                updateSaturation(seekBarValue)
+            }
             return true
         }
         return false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (item.itemId == R.id.add_tile) {
-            TileUtils.requestAddTileService(
-                context,
-                SaturationTileService::class.java,
-                R.string.saturation_title,
-                R.drawable.ic_saturation_tile
-            )
-            true
-        } else {
-            super.onOptionsItemSelected(item)
+        return when (item.itemId) {
+            R.id.add_tile -> {
+                TileUtils.requestAddTileService(
+                    context,
+                    SaturationTileService::class.java,
+                    R.string.saturation_title,
+                    R.drawable.ic_saturation_tile
+                )
+                true
+            }
+            R.id.open_per_app -> {
+                startActivity(Intent(requireContext(), PerAppSaturationActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -114,7 +149,11 @@ class SaturationFragment : PreferenceFragmentCompat(), Preference.OnPreferenceCh
     fun restoreSaturationSetting(context: Context) {
         val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)
         val seekBarValue = sharedPrefs.getInt(Constants.KEY_SATURATION, 100)
-        updateSaturation(seekBarValue)
+        val perAppEnabled = sharedPrefs.getBoolean(Constants.KEY_PER_APP_ENABLED, false)
+        
+        if (!perAppEnabled) {
+            updateSaturation(seekBarValue)
+        }
     }
 
     private fun addViewPager(preview: LayoutPreference) {
