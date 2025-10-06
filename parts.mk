@@ -1,6 +1,10 @@
 # Sepolicy
 BOARD_SEPOLICY_DIRS += packages/apps/XiaomiParts/sepolicy
 
+# Soong
+PRODUCT_SOONG_NAMESPACES += \
+    packages/apps/XiaomiParts
+
 ifeq ($(TARGET_USE_CLEARSPEAKER),true)
 PRODUCT_PACKAGES += \
     ClearSpeaker
