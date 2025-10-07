@@ -1,0 +1,40 @@
+//
+// Copyright (C) LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+
+android_app {
+    name: "Resolution",
+
+    defaults: [
+        "SettingsLibDefaults",
+    ],
+
+    srcs: [
+        "src/**/*.kt",
+        "src/**/*.java",
+    ],
+
+    certificate: "platform",
+    resource_dirs: ["res"],
+    platform_apis: true,
+    system_ext_specific: true,
+    privileged: true,
+
+    static_libs: [
+        "androidx.core_core",
+        "androidx.preference_preference",
+        "org.lineageos.settings.resources",
+    ],
+
+    required: [
+        "privapp_whitelist_com.android.displayres.xml",
+    ],
+}
+
+prebuilt_etc {
+    name: "privapp_whitelist_com.android.displayres.xml",
+    src: "permissions/privapp_whitelist_com.android.displayres.xml",
+    sub_dir: "permissions",
+    system_ext_specific: true,
+}

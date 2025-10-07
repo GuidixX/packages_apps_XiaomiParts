@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 
+    These arrays should be overridden by device overlay in:
+    device/<vendor>/<device>/overlay/packages/apps/Resolution/res/values/arrays.xml
+    
+    Example:
+    <string-array name="config_resolutions">
+        <item>1440x3200</item>
+        <item>1080x2400</item>
+        <item>720x1600</item>
+    </string-array>
+    <string-array name="config_densities">
+        <item>560</item>
+        <item>420</item>
+        <item>280</item>
+    </string-array>
+    <string-array name="config_resolution_labels">
+        <item>QHD (1440x3200)</item>
+        <item>Full HD (1080x2400)</item>
+        <item>HD (720x1600)</item>
+    </string-array>
+    -->
+    
+    <!-- Default empty arrays - should be overridden by device overlay -->
+    <string-array name="config_resolutions">
+    </string-array>
+    
+    <string-array name="config_densities">
+    </string-array>
+    
+    <string-array name="config_resolution_labels">
+    </string-array>
+</resources>

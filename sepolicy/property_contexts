@@ -6,3 +6,6 @@ ro.input.resampling                        u:object_r:exported_system_prop:s0
 viewroot.profile_rendering                 u:object_r:exported_system_prop:s0
 is_expressive_design_enabled               u:object_r:exported_system_prop:s0
 renderthread.skia.reduceopstasksplitting   u:object_r:exported_system_prop:s0
+roid.saturation                            u:object_r:exported_system_prop:s0
+id.clearspeaker                            u:object_r:exported_system_prop:s0
+roid.displayres                            u:object_r:exported_system_prop:s0

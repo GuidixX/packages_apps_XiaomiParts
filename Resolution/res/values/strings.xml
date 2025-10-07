@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Display Resolution</string>
+    <string name="tile_title">Resolution</string>
+    <string name="summary">Change screen resolution</string>
+    <string name="resolutions_title">Available resolutions</string>
+    <string name="density_title">Density</string>
+    <string name="apply">Apply</string>
+    <string name="reset">Reset</string>
+    <string name="service_enable">Enable resolution service</string>
+    <string name="service_summary">Auto-apply resolution on boot</string>
+</resources>
+

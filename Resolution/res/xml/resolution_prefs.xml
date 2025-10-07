@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:key="resolution_index"
+        android:title="@string/resolutions_title"
+        android:entries="@array/config_resolution_labels"
+        android:entryValues="@array/config_resolutions"/>
+    <com.android.settingslib.widget.MainSwitchPreference
+        android:key="service_enabled"
+        android:title="@string/service_enable"
+        android:summary="@string/service_summary"
+        android:defaultValue="false" />
+    <Preference
+        android:key="apply_now"
+        android:title="@string/apply"
+        android:dependency="service_enabled"/>
+    <Preference
+        android:key="reset_default"
+        android:title="@string/reset"
+        android:dependency="service_enabled"/>
+</PreferenceScreen>

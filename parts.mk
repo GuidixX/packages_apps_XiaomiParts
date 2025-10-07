@@ -17,3 +17,7 @@ ifeq ($(TARGET_USE_DCDIMMING),true)
 PRODUCT_PACKAGES += \
     DcDimming
 endif
+ifeq ($(TARGET_USE_DISPLAYRESOLUTION),true)
+PRODUCT_PACKAGES += \
+    Resolution
+endif
