@@ -70,16 +70,27 @@ public class KprofilesSettingsFragment extends PreferenceFragment implements
             kProfilesAutoPreference.setSummary(R.string.kprofiles_not_supported);
             kProfilesAutoPreference.setEnabled(false);
         }
-        kProfilesModesPreference = (ListPreference) findPreference(KPROFILES_MODES_KEY);
+    kProfilesModesPreference = (ListPreference) findPreference(KPROFILES_MODES_KEY);
         if (IS_SUPPORTED) {
             kProfilesModesPreference.setEnabled(true);
             kProfilesModesPreference.setOnPreferenceChangeListener(this);
+            // Use a SummaryProvider instead of android:summary="%s"
+            kProfilesModesPreference.setSummaryProvider(pref -> {
+                ListPreference lp = (ListPreference) pref;
+                String val = lp.getValue();
+                return modesDesc(val);
+            });
         } else {
             kProfilesModesPreference.setSummary(R.string.kprofiles_not_supported);
             kProfilesModesPreference.setEnabled(false);
         }
         kProfilesModesInfo = (Preference) findPreference(KPROFILES_MODES_INFO);
         kProfilesModesInfo.setEnabled(IS_SUPPORTED);
+        // Set footer title dynamically instead of using formatting marker in XML
+        if (IS_SUPPORTED) {
+            final String value = FileUtils.readOneLine(KPROFILES_MODES_NODE);
+            kProfilesModesInfo.setTitle(modesDesc(value));
+        }
 
         updateValues();
 
