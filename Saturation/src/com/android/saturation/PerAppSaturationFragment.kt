@@ -76,13 +76,23 @@ class PerAppSaturationFragment : Fragment() {
             val enabledForApp = !disabled.contains(item.packageName)
             holder.switch.isChecked = enabledForApp
             holder.switch.setOnCheckedChangeListener { _: CompoundButton, isChecked: Boolean ->
-                if (isChecked) disabled.remove(item.packageName) else disabled.add(item.packageName)
-                // store a copy of the set to avoid SharedPreferences mutable-set issues
-                prefs.edit().putStringSet(Constants.KEY_PER_APP_DISABLED_PACKAGES, HashSet(disabled)).apply()
+                updateAppState(item.packageName, isChecked)
+            }
+            
+            holder.itemView.setOnClickListener {
+                val newState = !holder.switch.isChecked
+                holder.switch.isChecked = newState
+                updateAppState(item.packageName, newState)
             }
         }
 
         override fun getItemCount(): Int = data.size
+
+        private fun updateAppState(packageName: String, isEnabled: Boolean) {
+            if (isEnabled) disabled.remove(packageName) else disabled.add(packageName)
+            // store a copy of the set to avoid SharedPreferences mutable-set issues
+            prefs.edit().putStringSet(Constants.KEY_PER_APP_DISABLED_PACKAGES, HashSet(disabled)).apply()
+        }
     }
 
     private class VH(view: View) : RecyclerView.ViewHolder(view) {
