@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Clear Speaker - Japanese translations -->
+    <string name="app_name">スピーカークリア</string>
+    <string name="clear_speaker_title">スピーカーをクリア</string>
+    <string name="clear_speaker_summary">スピーカーをクリアするために30秒のオーディオを再生します</string>
+    <string name="clear_speaker_description">スピーカーが軽くほこりで詰まっている場合は、この機能を1〜2回実行してください。メディア音量を最大にしてください。\n\nスピーカーがひどく詰まっている場合は、スピーカーを下に向けてデバイスを振りながらこの機能を2〜5回実行してください。\n\n警告：ヘッドフォンが接続されていないことを確認してください。</string>
+</resources>

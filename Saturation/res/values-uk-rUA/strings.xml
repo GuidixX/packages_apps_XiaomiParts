@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Saturation - Ukrainian -->
+    <string name="app_name">Насиченість дисплея</string>
+    <string name="saturation_title">Насиченість дисплея</string>
+    <string name="saturation_summary">Керує рівнем насиченості дисплея</string>
+    <string name="saturation_footer_summary">Зміна кольорового режиму в налаштуваннях дисплея перезапише рівень насиченості і вимагатиме повторного застосування.</string>
+    <string name="tile_add">Додати плитку швидких налаштувань</string>
+    <string name="tile_added">Плитка додана</string>
+    <string name="tile_not_added">Плитка не додана</string>
+    <string name="tile_already_added">Плитка вже додана</string>
+
+    <string name="per_app_title">Насиченість для додатків</string>
+    <string name="per_app_enable">Використовувати насиченість для окремих додатків</string>
+    <string name="per_app_summary">Перезаписати глобальну насиченість для кожного додатку</string>
+    <string name="per_app_all_on">Увімкнено за замовчуванням для всіх додатків</string>
+    <string name="per_app_search">Пошук додатків</string>
+    <string name="per_app_empty">Додатків не знайдено</string>
+    <string name="per_app_tile">Насиченість для додатків</string>
+
+    <string name="custom_seekbar_value">Значення: <xliff:g id="v">%s</xliff:g></string>
+    <string name="custom_seekbar_default_value">за замовчуванням</string>
+    <string name="custom_seekbar_default_value_to_set">Значення за замовчуванням: <xliff:g id="v">%s</xliff:g>\nДовге натискання для встановлення</string>
+    <string name="custom_seekbar_default_value_is_set">Значення за замовчуванням встановлено</string>
+
+    <string name="image_preview_content_description">Попередній перегляд</string>
+    <string name="image_preview_next_page_content_description">Далі</string>
+    <string name="image_preview_previous_page_content_description">Назад</string>
+</resources>

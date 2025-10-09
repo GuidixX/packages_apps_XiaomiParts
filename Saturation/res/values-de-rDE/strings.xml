@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Saturation - German -->
+    <string name="app_name">Display-Sättigung</string>
+    <string name="saturation_title">Display-Sättigung</string>
+    <string name="saturation_summary">Steuert den Sättigungsgrad des Displays</string>
+    <string name="saturation_footer_summary">Das Ändern des Farbmoduses in den Anzeigeeinstellungen überschreibt die Sättigung und erfordert eine erneute Anwendung.</string>
+    <string name="tile_add">Quick Settings-Kachel hinzufügen</string>
+    <string name="tile_added">Kachel hinzugefügt</string>
+    <string name="tile_not_added">Kachel nicht hinzugefügt</string>
+    <string name="tile_already_added">Kachel bereits hinzugefügt</string>
+
+    <string name="per_app_title">Sättigung pro App</string>
+    <string name="per_app_enable">Per-App-Sättigung verwenden</string>
+    <string name="per_app_summary">Globale Sättigung pro Anwendung überschreiben</string>
+    <string name="per_app_all_on">Standardmäßig für alle Apps aktiviert</string>
+    <string name="per_app_search">Apps suchen</string>
+    <string name="per_app_empty">Keine Apps gefunden</string>
+    <string name="per_app_tile">Sättigung pro App</string>
+
+    <string name="custom_seekbar_value">Wert: <xliff:g id="v">%s</xliff:g></string>
+    <string name="custom_seekbar_default_value">standardmäßig</string>
+    <string name="custom_seekbar_default_value_to_set">Standardwert: <xliff:g id="v">%s</xliff:g>\nLanges Tippen zum Setzen</string>
+    <string name="custom_seekbar_default_value_is_set">Standardwert gesetzt</string>
+
+    <string name="image_preview_content_description">Vorschau</string>
+    <string name="image_preview_next_page_content_description">Weiter</string>
+    <string name="image_preview_previous_page_content_description">Zurück</string>
+</resources>

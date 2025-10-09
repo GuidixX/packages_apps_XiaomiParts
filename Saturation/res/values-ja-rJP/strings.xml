@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Saturation - Japanese -->
+    <string name="app_name">ディスプレイの彩度</string>
+    <string name="saturation_title">ディスプレイの彩度</string>
+    <string name="saturation_summary">ディスプレイの彩度レベルを制御します</string>
+    <string name="saturation_footer_summary">ディスプレイ設定でカラーモードを変更すると、彩度レベルが上書きされ、再適用が必要になります。</string>
+    <string name="tile_add">クイック設定タイルを追加</string>
+    <string name="tile_added">タイルが追加されました</string>
+    <string name="tile_not_added">タイルが追加されていません</string>
+    <string name="tile_already_added">タイルは既に追加されています</string>
+
+    <string name="per_app_title">アプリごとの彩度</string>
+    <string name="per_app_enable">アプリごとの彩度を使用する</string>
+    <string name="per_app_summary">アプリごとにグローバルな彩度を上書きします</string>
+    <string name="per_app_all_on">デフォルトですべてのアプリに有効</string>
+    <string name="per_app_search">アプリを検索</string>
+    <string name="per_app_empty">アプリが見つかりません</string>
+    <string name="per_app_tile">アプリごとの彩度</string>
+
+    <string name="custom_seekbar_value">値: <xliff:g id="v">%s</xliff:g></string>
+    <string name="custom_seekbar_default_value">デフォルト</string>
+    <string name="custom_seekbar_default_value_to_set">デフォルト値: <xliff:g id="v">%s</xliff:g>\n長押しで設定</string>
+    <string name="custom_seekbar_default_value_is_set">デフォルト値が設定されました</string>
+
+    <string name="image_preview_content_description">プレビュー</string>
+    <string name="image_preview_next_page_content_description">次へ</string>
+    <string name="image_preview_previous_page_content_description">前へ</string>
+</resources>

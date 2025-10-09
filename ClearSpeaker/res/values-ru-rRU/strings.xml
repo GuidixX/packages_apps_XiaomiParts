@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Clear Speaker - Russian translations -->
+    <string name="app_name">Очистка динамика</string>
+    <string name="clear_speaker_title">Очистка динамика</string>
+    <string name="clear_speaker_summary">Воспроизвести 30-секундный звук для очистки динамика</string>
+    <string name="clear_speaker_description">Запустите эту функцию один или два раза, если динамик слегка забит пылью. Установите громкость медиа на максимум.\n\nЕсли динамик сильно забит, запустите эту функцию 2-5 раз, встряхивая устройство динамиком вниз.\n\nВНИМАНИЕ: Убедитесь, что наушники отключены.</string>
+</resources>

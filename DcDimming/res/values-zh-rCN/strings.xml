@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- DcDimming - Chinese (Simplified) -->
+    <string name="app_name">直流调光</string>
+    <string name="app_title">直流调光</string>
+    <string name="dc_dimming_enable_title">直流调光</string>
+    <string name="dc_dimming_enable_summary">在低光照条件下减轻眼睛疲劳</string>
+    <string name="dc_dimming_enable_summary_not_supported">内核当前不支持直流调光</string>
+</resources>

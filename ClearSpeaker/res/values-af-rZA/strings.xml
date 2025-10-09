@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Afrikaans (South Africa) translations for Clear Speaker - placeholders -->
+    <string name="app_name">Clear speaker</string>
+    <string name="clear_speaker_title">Clear speaker</string>
+    <string name="clear_speaker_summary">Play a 30-second audio to clear the speaker</string>
+    <string name="clear_speaker_description">Run this feature once or twice if you find that your speaker is lightly blocked by dust. Set media volume to maximum.
+
+If the speaker is blocked heavily, run this feature 2-5 times while shaking your device with the speaker facing downwards.
+
+WARNING: Ensure that any headphones are unplugged.</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- DcDimming - Belarusian -->
+    <string name="app_name">DC Dimming</string>
+    <string name="app_title">DC Dimming</string>
+    <string name="dc_dimming_enable_title">DC Dimming</string>
+    <string name="dc_dimming_enable_summary">Змяншае напружанне вачэй пры нізкай асветленасці</string>
+    <string name="dc_dimming_enable_summary_not_supported">DC затемненне ў цяперашні час не падтрымліваецца ядром</string>
+</resources>

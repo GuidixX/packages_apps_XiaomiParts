@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Saturation - Russian -->
+    <string name="app_name">Насыщенность дисплея</string>
+    <string name="saturation_title">Насыщенность дисплея</string>
+    <string name="saturation_summary">Управление уровнем насыщенности дисплея</string>
+    <string name="saturation_footer_summary">Изменение цветового режима в настройках дисплея переопределит уровень насыщенности и потребует повторного применения.</string>
+    <string name="tile_add">Добавить плитку быстрых настроек</string>
+    <string name="tile_added">Плитка добавлена</string>
+    <string name="tile_not_added">Плитка не добавлена</string>
+    <string name="tile_already_added">Плитка уже добавлена</string>
+
+    <string name="per_app_title">Насыщенность для приложений</string>
+    <string name="per_app_enable">Использовать насыщенность для отдельных приложений</string>
+    <string name="per_app_summary">Переопределить глобальную насыщенность для каждого приложения</string>
+    <string name="per_app_all_on">Включено по умолчанию для всех приложений</string>
+    <string name="per_app_search">Поиск приложений</string>
+    <string name="per_app_empty">Приложения не найдены</string>
+    <string name="per_app_tile">Насыщенность на приложение</string>
+
+    <string name="custom_seekbar_value">Значение: <xliff:g id="v">%s</xliff:g></string>
+    <string name="custom_seekbar_default_value">по умолчанию</string>
+    <string name="custom_seekbar_default_value_to_set">Значение по умолчанию: <xliff:g id="v">%s</xliff:g>\nДлительное нажатие для установки</string>
+    <string name="custom_seekbar_default_value_is_set">Значение по умолчанию установлено</string>
+
+    <string name="image_preview_content_description">Предпросмотр</string>
+    <string name="image_preview_next_page_content_description">Далее</string>
+    <string name="image_preview_previous_page_content_description">Назад</string>
+</resources>

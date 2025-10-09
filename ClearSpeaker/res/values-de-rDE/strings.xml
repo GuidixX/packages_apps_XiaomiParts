@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Clear Speaker - German translations -->
+    <string name="app_name">Lautsprecher-Reinigung</string>
+    <string name="clear_speaker_title">Lautsprecher-Reinigung</string>
+    <string name="clear_speaker_summary">Spielt 30 Sekunden Audio ab, um den Lautsprecher zu reinigen</string>
+    <string name="clear_speaker_description">Führen Sie diese Funktion ein- oder zweimal aus, wenn Ihr Lautsprecher leicht durch Staub blockiert ist. Stellen Sie die Medienlautstärke auf maximal.\n\nWenn der Lautsprecher stark blockiert ist, führen Sie diese Funktion 2-5 Mal aus, während Sie das Gerät mit dem Lautsprecher nach unten schütteln.\n\nWARNUNG: Stellen Sie sicher, dass Kopfhörer nicht angeschlossen sind.</string>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Clear Speaker - Chinese (Simplified) translations -->
+    <string name="app_name">清理扬声器</string>
+    <string name="clear_speaker_title">清理扬声器</string>
+    <string name="clear_speaker_summary">播放 30 秒音频以清理扬声器</string>
+    <string name="clear_speaker_description">如果您发现扬声器被轻微堵塞，请运行此功能一到两次。将媒体音量设置为最大。\n\n如果扬声器严重堵塞，请在扬声器朝下的情况下摇动设备并运行此功能 2-5 次。\n\n警告：请确保未插入耳机。</string>
+</resources>

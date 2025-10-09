@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Clear Speaker - Belarusian translations -->
+    <string name="app_name">Ачыстка дынаміка</string>
+    <string name="clear_speaker_title">Ачыстка дынаміка</string>
+    <string name="clear_speaker_summary">Прайграць 30-секундны аўдыё, каб ачысціць дынамік</string>
+    <string name="clear_speaker_description">Запусціце гэтую функцыю адзін або два разы, калі вы заўважылі, што дынамік злёгку забіты пылам. Усталюеце гучнасць медыя на максімум.\n\nКалі дынамік моцна забіты, запусціце гэтую функцыю 2-5 разоў, пакуль вы трэсціце прыладу з дынамікам уверх.\n\nУВАГА: Пераканайцеся, што навушнікі адключаныя.</string>
+</resources>
