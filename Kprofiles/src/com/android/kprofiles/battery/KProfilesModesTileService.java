@@ -94,13 +94,11 @@ public class KProfilesModesTileService extends TileService {
     }
 
     private void setMode(String mode) {
-        FileUtils.writeLine(KPROFILES_MODES_NODE, mode);
-        mSelfChange = true;
-        Intent intent = new Intent(INTENT_ACTION);
-        intent.setFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
-        mContext.sendBroadcastAsUser(intent, UserHandle.CURRENT);
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        prefs.edit().putString(KPROFILES_MODES_KEY, mode).apply();
+    FileUtils.writeLine(KPROFILES_MODES_NODE, mode);
+    mSelfChange = true;
+    Intent intent = new Intent(INTENT_ACTION);
+    intent.setFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
+    mContext.sendBroadcastAsUser(intent, UserHandle.CURRENT);
     }
 
     private String getMode() {
