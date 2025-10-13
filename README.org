@@ -1,0 +1,28 @@
+#+TITLE: XiaomiParts
+
+* Table of contents
+:PROPERTIES:
+:TOC:
+:END:
+:CONTENTS:
+- [[#about][About]]
+- [[#usage][Usage]]
+:END:
+
+* About
+
+Parts App that provides each package separately just by setting target for only needed features.
+
+* Usage
+
+** 1) Clone this repository to the specified directory
+
+#+BEGIN_SRC shell
+git clone https://github.com/GuidixX/packages_apps_XiaomiParts packages/apps/XiaomiParts
+#+END_SRC
+
+** 2) Adapt the following commit for your device and build it as it is :)
+
+https://github.com/GuidixX/device_xiaomi_peridot/commit/f4633bb7b7c45a19215197babdb7b1822fbf1545
+
+#+END_SRC
