@@ -19,6 +19,5 @@ PRODUCT_PACKAGES += \
 endif
 ifeq ($(TARGET_USE_KPROFILES),true)
 PRODUCT_PACKAGES += \
-    KProfiles \
-    init.kprofiles.rc
+    KProfiles
 endif
