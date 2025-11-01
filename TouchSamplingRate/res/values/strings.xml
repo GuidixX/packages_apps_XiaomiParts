@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <!-- High Touch Sampling Rate settings -->
+    <string name="app_name">Touch Sampling Rate</string>
+    <string name="app_title">High Touch Sampling Rate</string>
+    <string name="touch_sampling_rate_title">High Touch Sampling Rate</string>
+    <string name="touch_sampling_rate_summary">Increase touch response rate for better gaming experience</string>
+
+</resources>
