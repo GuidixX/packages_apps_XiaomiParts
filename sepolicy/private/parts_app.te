@@ -1,4 +1,3 @@
-type parts_app, domain;
 typeattribute parts_app mlstrustedsubject;
 
 app_domain(parts_app)
@@ -39,12 +38,6 @@ allow parts_app system_app_data_file:{ file lnk_file } create_file_perms;
 
 # Allow binder communication with gpuservice
 binder_call(parts_app, gpuservice)
-
-allow parts_app vendor_sysfs_displayfeature:dir { search read open getattr };
-allow parts_app vendor_sysfs_displayfeature:file { read open getattr write };
-allow parts_app sysfs_disp_param:file rw_file_perms;
-allow parts_app sysfs_kprofiles:file rw_file_perms;
-allow parts_app vendor_sysfs_touch:file rw_file_perms;
 
 # dont allow devicesettings_app to access some rendering and resampling props
 # persist.input.velocitytracker.strategy
