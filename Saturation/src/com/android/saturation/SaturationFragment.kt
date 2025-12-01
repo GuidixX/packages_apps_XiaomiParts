@@ -31,18 +31,18 @@ import android.view.ViewGroup
 import android.content.Intent
 import android.widget.ImageView
 import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import com.android.settingslib.widget.MainSwitchPreference
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.android.settingslib.widget.LayoutPreference
+import com.android.settingslib.widget.SettingsBasePreferenceFragment
 import com.android.saturation.Constants
 import com.android.saturation.CustomSeekBarPreference
 import com.android.saturation.R
 import com.android.saturation.utils.TileUtils
 
-class SaturationFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener {
+class SaturationFragment : SettingsBasePreferenceFragment(), Preference.OnPreferenceChangeListener {
 
     private var mViewArrowPrevious: View? = null
     private var mViewArrowNext: View? = null
