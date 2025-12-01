@@ -9,13 +9,13 @@ package com.android.panelorientation.touch;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceFragment;
 import com.android.settingslib.widget.MainSwitchPreference;
+import com.android.settingslib.widget.SettingsBasePreferenceFragment;
 
 import com.android.panelorientation.Constants;
 import com.android.panelorientation.R;
 
-public class EdgeRejectionSettingsFragment extends PreferenceFragment
+public class EdgeRejectionSettingsFragment extends SettingsBasePreferenceFragment
         implements Preference.OnPreferenceChangeListener {
 
     @Override

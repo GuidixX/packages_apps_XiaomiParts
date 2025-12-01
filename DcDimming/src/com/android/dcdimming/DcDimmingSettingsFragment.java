@@ -20,13 +20,13 @@ import android.content.Context;
 import android.os.Bundle;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
-import androidx.preference.PreferenceFragment;
 import androidx.preference.SwitchPreference;
 
+import com.android.settingslib.widget.SettingsBasePreferenceFragment;
 import com.android.dcdimming.R;
 import com.android.dcdimming.utils.FileUtils;
 
-public class DcDimmingSettingsFragment extends PreferenceFragment implements
+public class DcDimmingSettingsFragment extends SettingsBasePreferenceFragment implements
         OnPreferenceChangeListener {
 
     private SwitchPreference mDcDimmingPreference;
