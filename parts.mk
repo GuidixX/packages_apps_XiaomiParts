@@ -3,10 +3,6 @@ BOARD_VENDOR_SEPOLICY_DIRS += packages/apps/XiaomiParts/sepolicy/vendor
 SYSTEM_EXT_PUBLIC_SEPOLICY_DIRS += packages/apps/XiaomiParts/sepolicy/public
 SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += packages/apps/XiaomiParts/sepolicy/private
 
-# Soong
-PRODUCT_SOONG_NAMESPACES += \
-    packages/apps/XiaomiParts
-
 ifeq ($(TARGET_USE_CLEARSPEAKER),true)
 PRODUCT_PACKAGES += \
     ClearSpeaker
