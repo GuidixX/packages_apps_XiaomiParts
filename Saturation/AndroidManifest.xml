@@ -59,7 +59,6 @@
         <!-- Display Saturation activity -->
         <activity
             android:name=".SaturationActivity"
-            android:label="@string/saturation_title"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.android.settings.action.IA_SETTINGS" />
