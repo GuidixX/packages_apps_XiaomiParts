@@ -12,6 +12,13 @@ public class Constants {
     /* Broadcast action sent when kprofiles mode changes */
     public static final String ACTION_KPROFILE_SETTING_CHANGED = "com.android.kprofiles.battery.KPROFILE_CHANGED";
 
+    /* Per-app Kprofiles */
+    public static final String KEY_PER_APP_KPROFILES_DISABLED_PACKAGES = "per_app_kprofiles_disabled_packages"; // StringSet
+    public static final String KEY_PER_APP_KPROFILES_MODES = "per_app_kprofiles_modes"; // StringSet of "packageName:mode" entries
+
+    /** Mode value meaning "inherit the global mode" (no per-app override). */
+    public static final int PER_APP_MODE_DEFAULT = -1;
+
     private Constants() {
         // utility class
     }
