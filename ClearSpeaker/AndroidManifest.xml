@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_SEARCH_INDEXABLES" />
 
     <uses-sdk
         android:minSdkVersion="24"
@@ -40,5 +41,18 @@
                 android:name="com.android.settings.summary"
                 android:resource="@string/clear_speaker_summary" />
         </activity>
+
+        <provider
+            android:name=".SearchIndexingProvider"
+            android:authorities="com.android.clearspeaker"
+            android:readPermission="android.permission.READ_SEARCH_INDEXABLES"
+            android:exported="true"
+            android:multiprocess="false"
+            android:initOrder="100"
+            android:grantUriPermissions="true">
+            <intent-filter>
+                <action android:name="android.content.action.SEARCH_INDEXABLES_PROVIDER" />
+            </intent-filter>
+        </provider>
     </application>
 </manifest>
