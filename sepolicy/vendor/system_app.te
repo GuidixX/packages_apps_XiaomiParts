@@ -1,3 +1,8 @@
 allow system_app sysfs_kprofiles:file rw_file_perms;
 allow system_app vendor_sysfs_sensors:file rw_file_perms;
 allow system_app sysfs_disp_param:file rw_file_perms;
+allow system_app {
+    sysfs_hgain
+    sysfs_mgain
+    sysfs_sgain
+}:file rw_file_perms;

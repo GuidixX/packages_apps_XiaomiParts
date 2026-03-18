@@ -3,3 +3,7 @@ type sysfs_disp_param, sysfs_type, fs_type;
 type sysfs_kprofiles, sysfs_type, fs_type;
 
 type sysfs_thermal_sconfig, sysfs_type, fs_type;
+
+type sysfs_hgain, sysfs_type, fs_type;
+type sysfs_mgain, sysfs_type, fs_type;
+type sysfs_sgain, sysfs_type, fs_type;

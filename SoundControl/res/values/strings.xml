@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- App name and description -->
+    <string name="app_name">Sound Control</string>
+    <string name="app_description">Control audio amplification settings</string>
+
+    <!-- Audio amplification settings -->
+    <string name="advanced_settings">Audio Amplification</string>
+    <string name="headphone_gain">Headphone Gain</string>
+    <string name="microphone_gain">Microphone Gain</string>
+    <string name="speaker_gain">Speaker Gain</string>
+
+    <!-- Headphone gain summary -->
+    <string name="headphone_gain_summary">Adjust headphone output amplification</string>
+
+    <!-- Microphone gain summary -->
+    <string name="microphone_gain_summary">Adjust microphone input amplification</string>
+
+    <!-- Speaker gain summary -->
+    <string name="speaker_gain_summary">Adjust speaker output amplification</string>
+
+    <!-- Custom seekbar strings -->
+    <string name="custom_seekbar_value">Value: <xliff:g id="v">%s</xliff:g></string>
+    <string name="custom_seekbar_current_value">Current value: <xliff:g id="v">%s</xliff:g></string>
+    <string name="custom_seekbar_default_value">Default</string>
+    <string name="custom_seekbar_default_value_to_set">Default value: <xliff:g id="v">%s</xliff:g>\nLong press to set</string>
+    <string name="custom_seekbar_default_value_is_set">Default value is set</string>
+    <string name="custom_seekbar_reset">Reset to default value</string>
+    <string name="custom_seekbar_decrease">Decrease value</string>
+    <string name="custom_seekbar_increase">Increase value</string>
+</resources>
