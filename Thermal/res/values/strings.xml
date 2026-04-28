@@ -20,8 +20,8 @@
     <string name="thermal_title">Thermal Profiles</string>
     <string name="thermal_summary">Per-app thermal profiles with automatic detection</string>
     <string name="thermal_default">Default</string>
-    <string name="thermal_gaming_heavy">Gaming (Heavy)</string>
-    <string name="thermal_gaming_medium">Gaming (Medium)</string>
+    <string name="thermal_gaming_heavy">Gaming (Heavy) mgame</string>
+    <string name="thermal_gaming_medium">Gaming (Medium) tgame</string>
     <string name="thermal_gaming_light">Gaming (Light)</string>
     <string name="thermal_benchmark">Benchmark</string>
     <string name="thermal_camera">Camera</string>
