@@ -285,34 +285,30 @@ public final class ThermalUtils {
         return getStateForPackage(packageName) != STATE_DEFAULT;
     }
 
-    protected void setDefaultThermalProfile() {
-        FileUtils.writeLine(THERMAL_SCONFIG, SCONFIG_DEFAULT);
-    }
-
-    protected void setChargingThermalProfile() {
-        FileUtils.writeLine(THERMAL_SCONFIG, SCONFIG_CHARGE);
-    }
-
     /**
-     * If the given package is currently in the foreground, apply its thermal profile immediately.
+     * If the given package is currently in the foreground, apply its profile immediately.
      * Called after the user manually assigns a profile in the UI.
      */
-    protected void applyIfForeground(String packageName) {
+    public void applyIfForeground(String packageName) {
         try {
             android.app.ActivityManager am = (android.app.ActivityManager)
-                    mContext.getSystemService(android.content.Context.ACTIVITY_SERVICE);
+                    mContext.getSystemService(Context.ACTIVITY_SERVICE);
             if (am == null) return;
             java.util.List<android.app.ActivityManager.RunningTaskInfo> tasks =
                     am.getRunningTasks(1);
             if (tasks != null && !tasks.isEmpty()) {
                 android.content.ComponentName top = tasks.get(0).topActivity;
-                if (top != null && packageName.equals(top.getPackageName())) {
+                if (top != null && top.getPackageName().equals(packageName)) {
                     setThermalProfile(packageName);
                 }
             }
         } catch (Exception e) {
-            // ignore
+            // Ignore
         }
+    }
+
+    protected void setDefaultThermalProfile() {
+        FileUtils.writeLine(THERMAL_SCONFIG, SCONFIG_DEFAULT);
     }
 
     protected void setThermalProfile(String packageName) {
