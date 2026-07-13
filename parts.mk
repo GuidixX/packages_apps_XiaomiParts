@@ -35,6 +35,10 @@ ifeq ($(TARGET_SUPPORTS_SNDCTRL),true)
 PRODUCT_PACKAGES += \
     SoundControl
 endif
+ifeq ($(TARGET_SUPPORTS_NOTGAMETURBO),true)
+PRODUCT_PACKAGES += \
+    NotGameTurbo
+endif
 ifeq ($(TARGET_USE_THERMALPROFILES),true)
 PRODUCT_PACKAGES += \
     ThermalProfiles
