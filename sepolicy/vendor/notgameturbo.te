@@ -1,0 +1,6 @@
+type vendor_sysfs_touch, fs_type, sysfs_type;
+
+allow platform_app hal_touchfeature_xiaomi_service:service_manager find;
+binder_call(platform_app, hal_touchfeature_xiaomi_default)
+allow priv_app hal_touchfeature_xiaomi_service:service_manager find;
+binder_call(priv_app, hal_touchfeature_xiaomi_default)
