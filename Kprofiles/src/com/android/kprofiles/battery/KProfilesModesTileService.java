@@ -4,9 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.UserHandle;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
+
+import androidx.preference.PreferenceManager;
 
 import com.android.kprofiles.Constants;
 import com.android.kprofiles.utils.FileUtils;
@@ -83,6 +86,12 @@ public class KProfilesModesTileService extends TileService {
     private void setMode(String mode) {
         try {
             FileUtils.writeLine(Constants.KPROFILES_MODES_NODE, mode);
+            // Keep prefs as the single source of truth for the global profile so
+            // PerAppKprofilesService.setDefaultProfile() restores the value the
+            // user actually picked here, instead of a stale pref.
+            SharedPreferences prefs =
+                    PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            prefs.edit().putString(Constants.KEY_KPROFILES_MODES, mode).apply();
         } catch (Exception e) {
             // ignore write failures
         }

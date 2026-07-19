@@ -22,12 +22,15 @@ import android.app.ActivityTaskManager;
 import android.app.IActivityTaskManager;
 import android.app.Service;
 import android.app.TaskStackListener;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.util.Log;
-import com.android.kprofiles.utils.FileUtils;
 
 import java.util.List;
 
@@ -36,18 +39,57 @@ public class PerAppKprofilesService extends Service {
     private static final String TAG = "PerAppKprofilesService";
     private static final boolean DEBUG = false;
 
-    private String mPreviousApp;
+    // Task stack changes arrive in bursts during a single app switch; coalesce
+    // them so we only apply the settled foreground app once.
+    private static final long APPLY_DEBOUNCE_MS = 150L;
+
     private KprofilesUtils mKprofilesUtils;
-    // If we switch into an app with a per-app override, save the current global profile
-    // so it can be restored when the user leaves that app.
-    private String mSavedGlobalProfile = null;
-    private String mOverriddenApp = null;
+
+    // Dedicated worker so kernel-node writes (which can block) never run on the
+    // binder thread that delivers task-stack callbacks. All mutable state below
+    // is touched only from this thread, so no extra synchronization is needed.
+    private HandlerThread mWorkerThread;
+    private Handler mWorker;
+    private String mPreviousApp;
+
+    private final Runnable mApplyRunnable = this::applyForegroundApp;
+
+    private final BroadcastReceiver mScreenReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (Intent.ACTION_SCREEN_OFF.equals(action)) {
+                // Drop back to the global profile while the screen is off so an
+                // override can't stay latched on an idle device.
+                mWorker.post(() -> {
+                    mPreviousApp = null;
+                    mKprofilesUtils.setDefaultProfile();
+                });
+            } else if (Intent.ACTION_SCREEN_ON.equals(action)) {
+                // Re-apply for whatever is in the foreground on wake.
+                scheduleApply();
+            }
+        }
+    };
 
     @Override
     public void onCreate() {
         if (DEBUG) Log.d(TAG, "Creating service");
         mKprofilesUtils = new KprofilesUtils(this);
+
+        mWorkerThread = new HandlerThread("kprofiles-worker");
+        mWorkerThread.start();
+        mWorker = new Handler(mWorkerThread.getLooper());
+
         registerTaskStackListener();
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(Intent.ACTION_SCREEN_ON);
+        registerReceiver(mScreenReceiver, filter);
+
+        // Apply for the current foreground app right away.
+        scheduleApply();
         super.onCreate();
     }
 
@@ -64,7 +106,18 @@ public class PerAppKprofilesService extends Service {
 
     @Override
     public void onDestroy() {
-        mKprofilesUtils.setDefaultProfile();
+        try {
+            unregisterReceiver(mScreenReceiver);
+        } catch (Exception e) {
+            // ignore if never registered
+        }
+        // Restore the global profile on the worker, then tear it down so the
+        // final write is not lost to a premature quit().
+        mWorker.removeCallbacks(mApplyRunnable);
+        mWorker.post(() -> {
+            mKprofilesUtils.setDefaultProfile();
+            mWorkerThread.quitSafely();
+        });
         super.onDestroy();
     }
 
@@ -72,7 +125,7 @@ public class PerAppKprofilesService extends Service {
         TaskStackListener taskListener = new TaskStackListener() {
             @Override
             public void onTaskStackChanged() {
-                onForegroundAppChanged();
+                scheduleApply();
             }
         };
 
@@ -84,55 +137,33 @@ public class PerAppKprofilesService extends Service {
         }
     }
 
-    private void onForegroundAppChanged() {
+    /** Coalesce rapid callbacks and hand the work to the worker thread. */
+    private void scheduleApply() {
+        mWorker.removeCallbacks(mApplyRunnable);
+        mWorker.postDelayed(mApplyRunnable, APPLY_DEBOUNCE_MS);
+    }
+
+    /** Runs on the worker thread only. */
+    private void applyForegroundApp() {
         try {
             ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
             if (am == null) return;
             List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
-            if (tasks != null && !tasks.isEmpty()) {
-                ComponentName topActivity = tasks.get(0).topActivity;
-                if (topActivity != null) {
-                    String foregroundApp = topActivity.getPackageName();
-                    if (!foregroundApp.equals(mPreviousApp)) {
-                        // Determine if the new foreground app has a per-app override
-                        int state = mKprofilesUtils.getStateForPackage(foregroundApp);
+            if (tasks == null || tasks.isEmpty()) return;
 
-                        if (state != KprofilesUtils.STATE_DEFAULT) {
-                            // entering an overridden app
-                            if (mOverriddenApp == null) {
-                                // save current global profile (read raw node)
-                                try {
-                                    mSavedGlobalProfile = FileUtils.readOneLine(Constants.KPROFILES_MODES_NODE);
-                                } catch (Exception e) {
-                                    mSavedGlobalProfile = null;
-                                }
-                            }
-                            mKprofilesUtils.setKprofilesProfile(foregroundApp);
-                            mOverriddenApp = foregroundApp;
-                        } else {
-                            // entering a non-overridden app: if we were overriding before, restore
-                            if (mOverriddenApp != null) {
-                                if (mSavedGlobalProfile != null) {
-                                    try {
-                                        FileUtils.writeLine(Constants.KPROFILES_MODES_NODE, mSavedGlobalProfile);
-                                    } catch (Exception e) {
-                                        // fallback to writing stored prefs-based default
-                                        mKprofilesUtils.setDefaultProfile();
-                                    }
-                                } else {
-                                    mKprofilesUtils.setDefaultProfile();
-                                }
-                                mOverriddenApp = null;
-                                mSavedGlobalProfile = null;
-                            }
-                        }
+            ComponentName topActivity = tasks.get(0).topActivity;
+            if (topActivity == null) return;
 
-                        mPreviousApp = foregroundApp;
-                    }
-                }
-            }
+            String foregroundApp = topActivity.getPackageName();
+            if (foregroundApp.equals(mPreviousApp)) return;
+
+            // setKprofilesProfile() applies the per-app override if one exists,
+            // otherwise it restores the global default. That single call keeps
+            // both cases correct without tracking saved/overridden state here.
+            mKprofilesUtils.setKprofilesProfile(foregroundApp);
+            mPreviousApp = foregroundApp;
         } catch (Exception e) {
-            if (DEBUG) Log.e(TAG, "Error getting foreground app", e);
+            if (DEBUG) Log.e(TAG, "Error applying foreground app profile", e);
         }
     }
 }
