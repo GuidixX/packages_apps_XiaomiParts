@@ -1,3 +1,10 @@
+type hal_touchfeature_xiaomi_default, domain;
+type hal_touchfeature_xiaomi_default_exec, exec_type, file_type, vendor_file_type;
+type hal_touchfeature_xiaomi_service, hal_service_type, protected_service, service_manager_type;
+
+allow parts_app hal_touchfeature_xiaomi_service:service_manager find;
+binder_call(parts_app, hal_touchfeature_xiaomi_default)
+
 allow parts_app vendor_sysfs_displayfeature:dir { search read open getattr };
 allow parts_app vendor_sysfs_displayfeature:file { read open getattr };
 allow parts_app sysfs_disp_param:file rw_file_perms;
