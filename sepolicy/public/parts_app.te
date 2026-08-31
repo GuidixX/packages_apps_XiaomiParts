@@ -1,1 +1,1 @@
-type parts_app, domain;
+type parts_app, domain, coredomain;
