@@ -6,4 +6,4 @@ user=system seinfo=platform isPrivApp=true name=com.android.panelorientation dom
 user=system seinfo=platform isPrivApp=true name=com.android.touchsamplingrate domain=parts_app type=system_app_data_file levelFrom=all
 user=system seinfo=platform isPrivApp=true name=com.android.thermal      domain=parts_app type=system_app_data_file levelFrom=all
 user=system seinfo=platform isPrivApp=true name=com.android.soundcontrol domain=parts_app type=system_app_data_file levelFrom=all
-user=system seinfo=platform isPrivApp=true name=com.grewal.notgamemode   domain=parts_app type=system_app_data_file levelFrom=all
+user=_app   seinfo=platform isPrivApp=true name=com.grewal.notgamemode   domain=parts_app type=app_data_file        levelFrom=all
