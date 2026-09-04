@@ -1,6 +1,11 @@
 # Display param
 genfscon sysfs /devices/virtual/mi_display/disp_feature/disp-DSI-0/disp_param                                u:object_r:sysfs_disp_param:s0
 
+# DisplayFeatures
+genfscon sysfs /devices/platform/soc/soc:qcom,dsi-display-primary/dc                                         u:object_r:sysfs_displayfeatures:s0
+genfscon sysfs /devices/platform/soc/soc:qcom,dsi-display-primary/hbm                                        u:object_r:sysfs_displayfeatures:s0
+genfscon sysfs /class/drm/card0/sde-crtc-0/measured_fps                                                      u:object_r:sysfs_displayfeatures:s0
+
 # Kprofiles
 genfscon sysfs /module/kprofiles/parameters/auto_kp                                                          u:object_r:sysfs_kprofiles:s0
 genfscon sysfs /kernel/kprofiles/kp_mode                                                                     u:object_r:sysfs_kprofiles:s0

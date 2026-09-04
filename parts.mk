@@ -43,3 +43,8 @@ ifeq ($(TARGET_USE_THERMALPROFILES),true)
 PRODUCT_PACKAGES += \
     ThermalProfiles
 endif
+ifeq ($(TARGET_USE_DISPLAYFEATURES),true)
+PRODUCT_PACKAGES += \
+    DisplayFeatures \
+    DisplayFeaturesOverlay
+endif

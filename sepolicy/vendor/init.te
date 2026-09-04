@@ -1,2 +1,5 @@
 # KProfiles
 allow init sysfs_kprofiles:file { setattr };
+
+# DisplayFeatures
+allow init sysfs_displayfeatures:file { setattr };
