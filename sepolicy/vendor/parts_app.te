@@ -8,6 +8,10 @@ binder_call(parts_app, hal_touchfeature_xiaomi_default)
 allow parts_app vendor_sysfs_displayfeature:dir { search read open getattr };
 allow parts_app vendor_sysfs_displayfeature:file { read open getattr };
 allow parts_app sysfs_disp_param:file rw_file_perms;
+allow parts_app sysfs_livedisplay_tuneable:dir search;
+allow parts_app sysfs_livedisplay_tuneable:file rw_file_perms;
+allow parts_app sysfs_displayfeatures:dir search;
+allow parts_app sysfs_displayfeatures:file rw_file_perms;
 allow parts_app sysfs_kprofiles:file rw_file_perms;
 allow parts_app vendor_sysfs_touch:file rw_file_perms;
 allow parts_app sysfs_thermal_sconfig:file rw_file_perms;
