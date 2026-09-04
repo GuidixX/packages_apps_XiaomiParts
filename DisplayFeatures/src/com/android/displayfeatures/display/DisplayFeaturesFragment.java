@@ -1,0 +1,284 @@
+/*
+ * Copyright (C) 2020 YAAP
+ * Copyright (C) 2023-2025 cyberknight777
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.android.displayfeatures.display;
+
+import static com.android.internal.util.yaap.AutoSettingConsts.MODE_DISABLED;
+import static com.android.internal.util.yaap.AutoSettingConsts.MODE_NIGHT;
+import static com.android.internal.util.yaap.AutoSettingConsts.MODE_TIME;
+import static com.android.internal.util.yaap.AutoSettingConsts.MODE_MIXED_SUNSET;
+import static com.android.internal.util.yaap.AutoSettingConsts.MODE_MIXED_SUNRISE;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.UserHandle;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceManager;
+import androidx.preference.SwitchPreferenceCompat;
+import android.provider.Settings;
+
+import com.android.displayfeatures.R;
+import com.android.displayfeatures.utils.FileUtils;
+import com.android.settingslib.widget.SettingsBasePreferenceFragment;
+
+public class DisplayFeaturesFragment extends SettingsBasePreferenceFragment implements
+        Preference.OnPreferenceChangeListener {
+
+    private static final String DC_DIMMING_SCHEDULE_KEY = "dc_schedule";
+
+    private SwitchPreferenceCompat mDcDimmingPreference;
+    private SwitchPreferenceCompat mHBMPreference;
+    private SwitchPreferenceCompat mFpsPreference;
+    private ListPreference mCABCPreference;
+    private Preference mDcDimmingSchedulePreference;
+    private DisplayFeaturesConfig mConfig;
+    private boolean mInternalHbmStart = false;
+    private boolean mInternalDcDimStart = false;
+    private boolean mInternalFpsStart = false;
+    private boolean mInternalCabcStart = false;
+
+    private final BroadcastReceiver mServiceStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(mConfig.ACTION_HBM_SERVICE_CHANGED)) {
+                if (mInternalHbmStart) {
+                        mInternalHbmStart = false;
+                        return;
+                }
+
+                if (mHBMPreference == null) return;
+
+                final boolean hbmStarted = intent.getBooleanExtra(
+                            mConfig.EXTRA_HBM_STATE, false);
+
+                mHBMPreference.setChecked(hbmStarted);
+
+            } else if (action.equals(mConfig.ACTION_DC_DIM_SERVICE_CHANGED)) {
+                if (mInternalDcDimStart) {
+                        mInternalDcDimStart = false;
+                        return;
+                }
+
+                if (mDcDimmingPreference == null) return;
+
+                final boolean dcDimStarted = intent.getBooleanExtra(
+                            mConfig.EXTRA_DC_DIM_STATE, false);
+
+                mDcDimmingPreference.setChecked(dcDimStarted);
+
+            } else if (action.equals(mConfig.ACTION_FPS_SERVICE_CHANGED)) {
+                if (mInternalFpsStart) {
+                        mInternalFpsStart = false;
+                        return;
+                }
+
+                if (mFpsPreference == null) return;
+
+                final boolean fpsStarted = intent.getBooleanExtra(
+                            mConfig.EXTRA_FPS_STATE, false);
+
+                mFpsPreference.setChecked(fpsStarted);
+            } else if (action.equals(mConfig.ACTION_CABC_SERVICE_CHANGED)) {
+                if (mInternalCabcStart) {
+                        mInternalCabcStart = false;
+                        return;
+                }
+
+               if (mCABCPreference == null) return;
+
+               final boolean cabcStarted = intent.getBooleanExtra(
+                           mConfig.EXTRA_CABC_STATE, false);
+
+               mCABCPreference.setValue(mConfig.isCabcCurrentlyEnabled(mConfig.getCabcPath()));
+               mCABCPreference.setSummary(mCABCPreference.getEntry());
+
+            }
+        }
+    };
+
+    @Override
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        setPreferencesFromResource(R.xml.displayfeatures_settings, rootKey);
+        mConfig = DisplayFeaturesConfig.getInstance(getContext());
+        mDcDimmingPreference = (SwitchPreferenceCompat) findPreference(mConfig.DISPLAYFEATURES_DC_DIMMING_KEY);
+        if (FileUtils.fileExists(mConfig.getDcDimPath())) {
+            mDcDimmingPreference.setEnabled(true);
+            mDcDimmingPreference.setOnPreferenceChangeListener(this);
+            mDcDimmingPreference.setChecked(mConfig.isCurrentlyEnabled(mConfig.getDcDimPath()));
+        } else {
+            getPreferenceScreen().removePreference(findPreference(mConfig.DISPLAYFEATURES_DC_DIMMING_KEY));
+        }
+        mHBMPreference = (SwitchPreferenceCompat) findPreference(mConfig.DISPLAYFEATURES_HBM_KEY);
+        if (FileUtils.fileExists(mConfig.getHbmPath())) {
+            mHBMPreference.setEnabled(true);
+            mHBMPreference.setOnPreferenceChangeListener(this);
+            mHBMPreference.setChecked(mConfig.isCurrentlyEnabled(mConfig.getHbmPath()));
+        } else {
+            getPreferenceScreen().removePreference(findPreference(mConfig.DISPLAYFEATURES_HBM_KEY));
+        }
+        mFpsPreference = (SwitchPreferenceCompat) findPreference(mConfig.DISPLAYFEATURES_FPS_KEY);
+        if (FileUtils.fileExists(mConfig.getFpsPath())) {
+            mFpsPreference.setOnPreferenceChangeListener(this);
+            mFpsPreference.setChecked(isFpsOverlayRunning());
+        } else {
+            getPreferenceScreen().removePreference(findPreference(mConfig.DISPLAYFEATURES_FPS_KEY));
+        }
+        mCABCPreference = (ListPreference) findPreference(mConfig.DISPLAYFEATURES_CABC_KEY);
+        if (FileUtils.fileExists(mConfig.getCabcPath())) {
+            mCABCPreference.setOnPreferenceChangeListener(this);
+            mCABCPreference.setValue(mConfig.isCabcCurrentlyEnabled(mConfig.getCabcPath()));
+            mCABCPreference.setSummary(mCABCPreference.getEntry());
+        } else {
+            getPreferenceScreen().removePreference(findPreference(mConfig.DISPLAYFEATURES_CABC_KEY));
+        }
+        mDcDimmingSchedulePreference = findPreference(DC_DIMMING_SCHEDULE_KEY);
+        if (FileUtils.fileExists(mConfig.getDcDimPath())) updateDcDimmingScheduleSummary();
+        else getPreferenceScreen().removePreference(findPreference(DC_DIMMING_SCHEDULE_KEY));
+
+        // Registering observers
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(mConfig.ACTION_HBM_SERVICE_CHANGED);
+        filter.addAction(mConfig.ACTION_DC_DIM_SERVICE_CHANGED);
+        filter.addAction(mConfig.ACTION_FPS_SERVICE_CHANGED);
+        filter.addAction(mConfig.ACTION_CABC_SERVICE_CHANGED);
+        getContext().registerReceiver(mServiceStateReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (FileUtils.fileExists(mConfig.getDcDimPath())) {
+            mDcDimmingPreference.setChecked(mConfig.isCurrentlyEnabled(mConfig.getDcDimPath()));
+            updateDcDimmingScheduleSummary();
+        }
+        if (FileUtils.fileExists(mConfig.getHbmPath())) {
+            mHBMPreference.setChecked(mConfig.isCurrentlyEnabled(mConfig.getHbmPath()));
+        }
+        if (FileUtils.fileExists(mConfig.getFpsPath())) {
+            mFpsPreference.setChecked(isFpsOverlayRunning());
+        }
+        if (FileUtils.fileExists(mConfig.getCabcPath())) {
+            mCABCPreference.setValue(mConfig.isCabcCurrentlyEnabled(mConfig.getCabcPath()));
+            mCABCPreference.setSummary(mCABCPreference.getEntry());
+        }
+    }
+
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        if (mConfig.DISPLAYFEATURES_DC_DIMMING_KEY.equals(preference.getKey())) {
+            mInternalDcDimStart = true;
+
+            FileUtils.writeLine(mConfig.getDcDimPath(), (Boolean) newValue ? "1":"0");
+
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+            sharedPrefs.edit().putBoolean(mConfig.DISPLAYFEATURES_DC_DIMMING_KEY, (Boolean) newValue).commit();
+
+            Intent intent = new Intent(mConfig.ACTION_DC_DIM_SERVICE_CHANGED);
+            intent.putExtra(mConfig.EXTRA_DC_DIM_STATE, (Boolean) newValue);
+            intent.setFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
+            getContext().sendBroadcastAsUser(intent, UserHandle.CURRENT);
+        }
+        if (mConfig.DISPLAYFEATURES_HBM_KEY.equals(preference.getKey())) {
+            mInternalHbmStart = true;
+
+            FileUtils.writeLine(mConfig.getHbmPath(), (Boolean) newValue ? "1" : "0");
+
+            Intent hbmIntent = new Intent(getContext(),
+                    com.android.displayfeatures.display.DisplayFeaturesHbmService.class);
+            if ((Boolean) newValue) getContext().startService(hbmIntent);
+            else getContext().stopService(hbmIntent);
+
+            Intent intent = new Intent(mConfig.ACTION_HBM_SERVICE_CHANGED);
+            intent.putExtra(mConfig.EXTRA_HBM_STATE, (Boolean) newValue);
+            intent.setFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
+            getContext().sendBroadcastAsUser(intent, UserHandle.CURRENT);
+        }
+        if (mConfig.DISPLAYFEATURES_FPS_KEY.equals(preference.getKey())) {
+            mInternalFpsStart = true;
+            final boolean enabled = (Boolean) newValue;
+
+            Intent fpsinfo = new Intent(getContext(),
+                    com.android.displayfeatures.display.DisplayFeaturesFpsService.class);
+            if (enabled) getContext().startService(fpsinfo);
+            else getContext().stopService(fpsinfo);
+        }
+        if (mConfig.DISPLAYFEATURES_CABC_KEY.equals(preference.getKey())) {
+            mInternalCabcStart = true;
+
+            String value = (String) newValue;
+            FileUtils.writeLine(mConfig.getCabcPath(), value);
+
+            mCABCPreference.setValue(value);
+            mCABCPreference.setSummary(mCABCPreference.getEntry());
+
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+            sharedPrefs.edit().putString(mConfig.DISPLAYFEATURES_CABC_KEY, value).commit();
+
+            boolean enabled = !"0".equals(value);
+
+            Intent intent = new Intent(mConfig.ACTION_CABC_SERVICE_CHANGED);
+            intent.putExtra(mConfig.EXTRA_CABC_STATE, enabled);
+            intent.setFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
+            getContext().sendBroadcastAsUser(intent, UserHandle.CURRENT);
+        }
+        return true;
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getContext().unregisterReceiver(mServiceStateReceiver);
+    }
+
+    private boolean isFpsOverlayRunning() {
+        final SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        return sharedPrefs.getBoolean(mConfig.PREF_KEY_FPS_STATE, false);
+    }
+
+    private void updateDcDimmingScheduleSummary() {
+        if (mDcDimmingSchedulePreference == null) return;
+        int mode = Settings.Secure.getIntForUser(getActivity().getContentResolver(),
+                Settings.Secure.DC_DIM_AUTO_MODE, 0, UserHandle.USER_CURRENT);
+        switch (mode) {
+            default:
+            case MODE_DISABLED:
+                mDcDimmingSchedulePreference.setSummary(R.string.dc_dimming_schedule_disabled);
+                break;
+            case MODE_NIGHT:
+                mDcDimmingSchedulePreference.setSummary(R.string.dc_dimming_schedule_twilight);
+                break;
+            case MODE_TIME:
+                mDcDimmingSchedulePreference.setSummary(R.string.dc_dimming_schedule_custom);
+                break;
+            case MODE_MIXED_SUNSET:
+                mDcDimmingSchedulePreference.setSummary(R.string.dc_dimming_schedule_mixed_sunset);
+                break;
+            case MODE_MIXED_SUNRISE:
+                mDcDimmingSchedulePreference.setSummary(R.string.dc_dimming_schedule_mixed_sunrise);
+                break;
+        }
+    }
+}
