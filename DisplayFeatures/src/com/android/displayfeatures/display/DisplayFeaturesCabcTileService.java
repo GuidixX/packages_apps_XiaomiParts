@@ -48,6 +48,7 @@ public class DisplayFeaturesCabcTileService extends TileService {
     private Intent mCabcIntent;
 
     private boolean mInternalStart;
+    private boolean mReceiverRegistered;
 
     private final BroadcastReceiver mServiceStateReceiver = new BroadcastReceiver() {
         @Override
@@ -97,12 +98,16 @@ public class DisplayFeaturesCabcTileService extends TileService {
 
         IntentFilter filter = new IntentFilter(mConfig.ACTION_CABC_SERVICE_CHANGED);
         registerReceiver(mServiceStateReceiver, filter, Context.RECEIVER_EXPORTED);
+        mReceiverRegistered = true;
     }
 
     @Override
     public void onStopListening() {
         super.onStopListening();
-        if (!mInternalStart) unregisterReceiver(mServiceStateReceiver);
+        if (mReceiverRegistered) {
+            unregisterReceiver(mServiceStateReceiver);
+            mReceiverRegistered = false;
+        }
     }
 
     @Override
@@ -119,8 +124,7 @@ public class DisplayFeaturesCabcTileService extends TileService {
 
         FileUtils.writeLine(mConfig.getCabcPath(), CabcValues[currentCabcMode]);
 
-        String value = mConfig.isCabcCurrentlyEnabled(mConfig.getCabcPath());
-        Boolean enabled = (!value.equals("0"));
+        Boolean enabled = (currentCabcMode > 0);
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPrefs.edit().putString(mConfig.DISPLAYFEATURES_CABC_KEY, CabcValues[currentCabcMode]).commit();

@@ -39,6 +39,7 @@ public class DisplayFeaturesDcDimTileService extends TileService {
     private Intent mDcDimIntent;
 
     private boolean mInternalStart;
+    private boolean mReceiverRegistered;
 
     private final BroadcastReceiver mServiceStateReceiver = new BroadcastReceiver() {
         @Override
@@ -54,8 +55,14 @@ public class DisplayFeaturesDcDimTileService extends TileService {
     private void updateUI() {
         final Tile tile = getQsTile();
         boolean enabled = mConfig.isCurrentlyEnabled(mConfig.getDcDimPath());
+        updateUI(tile, enabled);
+    }
+
+    private void updateUI(Tile tile, boolean enabled) {
 
         if (!enabled) tryStopService();
+
+        if (tile == null) return;
 
         tile.setIcon(Icon.createWithResource(this, enabled ? R.drawable.ic_dc_dimming_on : R.drawable.ic_dc_dimming_off));
         tile.setState(enabled ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
@@ -80,12 +87,16 @@ public class DisplayFeaturesDcDimTileService extends TileService {
 
         IntentFilter filter = new IntentFilter(mConfig.ACTION_DC_DIM_SERVICE_CHANGED);
         registerReceiver(mServiceStateReceiver, filter, Context.RECEIVER_EXPORTED);
+        mReceiverRegistered = true;
     }
 
     @Override
     public void onStopListening() {
         super.onStopListening();
-        if (!mInternalStart) unregisterReceiver(mServiceStateReceiver);
+        if (mReceiverRegistered) {
+            unregisterReceiver(mServiceStateReceiver);
+            mReceiverRegistered = false;
+        }
     }
 
     @Override
@@ -105,7 +116,8 @@ public class DisplayFeaturesDcDimTileService extends TileService {
         intent.setFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
         this.sendBroadcastAsUser(intent, UserHandle.CURRENT);
 
-        updateUI();
+        final Tile tile = getQsTile();
+        updateUI(tile, enabled);
     }
 
     private void tryStopService() {

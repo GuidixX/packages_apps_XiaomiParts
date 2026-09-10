@@ -34,6 +34,7 @@ public class DisplayFeaturesFpsTileService extends TileService {
 
     private boolean mIsShowing = false;
     private boolean mInternalStart = false;
+    private boolean mReceiverRegistered;
 
     private DisplayFeaturesConfig mConfig;
 
@@ -68,12 +69,16 @@ public class DisplayFeaturesFpsTileService extends TileService {
         updateTile();
         IntentFilter filter = new IntentFilter(mConfig.ACTION_FPS_SERVICE_CHANGED);
         registerReceiver(mServiceStateReceiver, filter, Context.RECEIVER_EXPORTED);
+        mReceiverRegistered = true;
     }
 
     @Override
     public void onStopListening() {
         super.onStopListening();
-        if (!mInternalStart) unregisterReceiver(mServiceStateReceiver);
+        if (mReceiverRegistered) {
+            unregisterReceiver(mServiceStateReceiver);
+            mReceiverRegistered = false;
+        }
     }
 
     @Override

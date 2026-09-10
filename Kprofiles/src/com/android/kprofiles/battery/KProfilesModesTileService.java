@@ -74,12 +74,12 @@ public class KProfilesModesTileService extends TileService {
         }
 
         mSelfChange = true;
+        setMode(mode);
+        updateTileContent(mode);
         final Intent intent = new Intent(Constants.ACTION_KPROFILE_SETTING_CHANGED);
         intent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
         getApplicationContext().sendBroadcastAsUser(intent, UserHandle.CURRENT);
 
-        setMode(mode);
-        updateTileContent();
         super.onClick();
     }
 
@@ -105,6 +105,14 @@ public class KProfilesModesTileService extends TileService {
     private void updateTileContent() {
         Tile tile = getQsTile();
         String mode = getMode();
+        updateTileContent(tile, mode);
+    }
+
+    private void updateTileContent(String mode) {
+        updateTileContent(getQsTile(), mode);
+    }
+
+    private void updateTileContent(Tile tile, String mode) {
         boolean isActive = mode != null && !mode.equals("0");
 
         tile.setState(isActive ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);

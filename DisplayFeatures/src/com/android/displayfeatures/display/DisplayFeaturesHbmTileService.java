@@ -38,6 +38,7 @@ public class DisplayFeaturesHbmTileService extends TileService {
     private Intent mHbmIntent;
 
     private boolean mInternalStart;
+    private boolean mReceiverRegistered;
 
     private final BroadcastReceiver mServiceStateReceiver = new BroadcastReceiver() {
         @Override
@@ -53,8 +54,14 @@ public class DisplayFeaturesHbmTileService extends TileService {
     private void updateUI() {
         final Tile tile = getQsTile();
         boolean enabled = mConfig.isCurrentlyEnabled(mConfig.getHbmPath());
+        updateUI(tile, enabled);
+    }
+
+    private void updateUI(Tile tile, boolean enabled) {
 
         if (!enabled) tryStopService();
+
+        if (tile == null) return;
 
         tile.setState(enabled ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
         tile.updateTile();
@@ -78,12 +85,16 @@ public class DisplayFeaturesHbmTileService extends TileService {
 
         IntentFilter filter = new IntentFilter(mConfig.ACTION_HBM_SERVICE_CHANGED);
         registerReceiver(mServiceStateReceiver, filter, Context.RECEIVER_EXPORTED);
+        mReceiverRegistered = true;
     }
 
     @Override
     public void onStopListening() {
         super.onStopListening();
-        if (!mInternalStart) unregisterReceiver(mServiceStateReceiver);
+        if (mReceiverRegistered) {
+            unregisterReceiver(mServiceStateReceiver);
+            mReceiverRegistered = false;
+        }
     }
 
     @Override
@@ -105,7 +116,8 @@ public class DisplayFeaturesHbmTileService extends TileService {
         intent.setFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
         this.sendBroadcastAsUser(intent, UserHandle.CURRENT);
 
-        updateUI();
+        final Tile tile = getQsTile();
+        updateUI(tile, enabled);
     }
 
     private void tryStopService() {
