@@ -32,3 +32,5 @@ on boot
     chmod 0660 /sys/module/kprofiles/parameters/auto_kp
     chown system system /sys/kernel/kprofiles/kp_mode
     chmod 0660 /sys/kernel/kprofiles/kp_mode
+    chown system system /sys/kernel/kprofiles/screen_on
+    chmod 0664 /sys/kernel/kprofiles/screen_on
