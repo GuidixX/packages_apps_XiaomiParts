@@ -30,7 +30,10 @@ import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
+
+import com.android.kprofiles.utils.FileUtils;
 
 import java.util.List;
 
@@ -44,6 +47,9 @@ public class PerAppKprofilesService extends Service {
     private static final long APPLY_DEBOUNCE_MS = 150L;
 
     private KprofilesUtils mKprofilesUtils;
+    private PowerManager mPowerManager;
+    private boolean mTaskListenerRegistered;
+    private volatile boolean mStopping;
 
     // Dedicated worker so kernel-node writes (which can block) never run on the
     // binder thread that delivers task-stack callbacks. All mutable state below
@@ -51,51 +57,55 @@ public class PerAppKprofilesService extends Service {
     private HandlerThread mWorkerThread;
     private Handler mWorker;
     private String mPreviousApp;
+    private boolean mInteractive;
 
     private final Runnable mApplyRunnable = this::applyForegroundApp;
+    private final Runnable mSyncScreenRunnable = this::syncScreenState;
+
+    private final TaskStackListener mTaskListener = new TaskStackListener() {
+        @Override
+        public void onTaskStackChanged() {
+            scheduleApply();
+        }
+    };
 
     private final BroadcastReceiver mScreenReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (Intent.ACTION_SCREEN_OFF.equals(action)) {
-                // Drop back to the global profile while the screen is off so an
-                // override can't stay latched on an idle device.
-                mWorker.post(() -> {
-                    mPreviousApp = null;
-                    mKprofilesUtils.setDefaultProfile();
-                });
-            } else if (Intent.ACTION_SCREEN_ON.equals(action)) {
-                // Re-apply for whatever is in the foreground on wake.
-                scheduleApply();
+            if (Intent.ACTION_SCREEN_OFF.equals(action)
+                    || Intent.ACTION_SCREEN_ON.equals(action)) {
+                mWorker.removeCallbacks(mSyncScreenRunnable);
+                mWorker.post(mSyncScreenRunnable);
             }
         }
     };
 
     @Override
     public void onCreate() {
+        super.onCreate();
         if (DEBUG) Log.d(TAG, "Creating service");
         mKprofilesUtils = new KprofilesUtils(this);
+        mPowerManager = getSystemService(PowerManager.class);
 
         mWorkerThread = new HandlerThread("kprofiles-worker");
         mWorkerThread.start();
         mWorker = new Handler(mWorkerThread.getLooper());
 
-        registerTaskStackListener();
-
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_SCREEN_ON);
-        registerReceiver(mScreenReceiver, filter);
-
-        // Apply for the current foreground app right away.
-        scheduleApply();
-        super.onCreate();
+        registerReceiver(mScreenReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (DEBUG) Log.d(TAG, "Starting service");
+        // Screen tracking is always needed on new kernels. Task tracking is
+        // only useful when the user has actually assigned per-app profiles.
+        updateTaskStackListener(KprofilesUtils.hasPerAppProfiles(this));
+        mWorker.removeCallbacks(mSyncScreenRunnable);
+        mWorker.post(mSyncScreenRunnable);
         return START_STICKY;
     }
 
@@ -106,14 +116,17 @@ public class PerAppKprofilesService extends Service {
 
     @Override
     public void onDestroy() {
+        mStopping = true;
         try {
             unregisterReceiver(mScreenReceiver);
         } catch (Exception e) {
             // ignore if never registered
         }
+        updateTaskStackListener(false);
         // Restore the global profile on the worker, then tear it down so the
         // final write is not lost to a premature quit().
         mWorker.removeCallbacks(mApplyRunnable);
+        mWorker.removeCallbacks(mSyncScreenRunnable);
         mWorker.post(() -> {
             mKprofilesUtils.setDefaultProfile();
             mWorkerThread.quitSafely();
@@ -121,30 +134,56 @@ public class PerAppKprofilesService extends Service {
         super.onDestroy();
     }
 
-    private void registerTaskStackListener() {
-        TaskStackListener taskListener = new TaskStackListener() {
-            @Override
-            public void onTaskStackChanged() {
-                scheduleApply();
-            }
-        };
-
+    private void updateTaskStackListener(boolean enabled) {
+        if (enabled == mTaskListenerRegistered) return;
         try {
             IActivityTaskManager atm = ActivityTaskManager.getService();
-            atm.registerTaskStackListener(taskListener);
+            if (enabled) {
+                atm.registerTaskStackListener(mTaskListener);
+            } else {
+                atm.unregisterTaskStackListener(mTaskListener);
+            }
+            mTaskListenerRegistered = enabled;
         } catch (Exception e) {
-            Log.e(TAG, "Failed to register task stack listener", e);
+            Log.e(TAG, "Failed to update task stack listener", e);
+        }
+    }
+
+    /** Runs on the worker, sampling current state instead of replaying stale intents. */
+    private void syncScreenState() {
+        if (mStopping || mPowerManager == null) return;
+        mInteractive = mPowerManager.isInteractive();
+        String value = mInteractive ? "1" : "0";
+        // Older kernels lack this node. Power HAL may already have updated it;
+        // avoid a duplicate write (and the kernel's synchronous QoS work).
+        if (FileUtils.fileExists(Constants.KPROFILES_SCREEN_ON_NODE)
+                && !value.equals(FileUtils.readOneLine(Constants.KPROFILES_SCREEN_ON_NODE))) {
+            FileUtils.writeLine(Constants.KPROFILES_SCREEN_ON_NODE, value);
+        }
+
+        mWorker.removeCallbacks(mApplyRunnable);
+        mPreviousApp = null;
+        if (mInteractive && KprofilesUtils.hasPerAppProfiles(this)) {
+            scheduleApply();
+        } else {
+            // Restore the selected global mode; auto_kp in the kernel decides
+            // whether an inactive display temporarily means Battery.
+            mKprofilesUtils.setDefaultProfile();
         }
     }
 
     /** Coalesce rapid callbacks and hand the work to the worker thread. */
     private void scheduleApply() {
+        if (mStopping) return;
         mWorker.removeCallbacks(mApplyRunnable);
         mWorker.postDelayed(mApplyRunnable, APPLY_DEBOUNCE_MS);
     }
 
     /** Runs on the worker thread only. */
     private void applyForegroundApp() {
+        // Task callbacks can arrive after SCREEN_OFF or before its broadcast.
+        if (mStopping || !mInteractive || mPowerManager == null
+                || !mPowerManager.isInteractive()) return;
         try {
             ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
             if (am == null) return;

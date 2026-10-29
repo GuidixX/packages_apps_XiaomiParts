@@ -54,28 +54,41 @@ public final class KprofilesUtils {
     public KprofilesUtils(Context context) {
         mContext = context;
         mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        // Preserve the kernel's selected default before the service applies any
+        // per-app profile, including on a fresh install without saved settings.
+        if (!mSharedPrefs.contains(Constants.KEY_KPROFILES_MODES)
+                && FileUtils.fileExists(Constants.KPROFILES_MODES_NODE)) {
+            String mode = FileUtils.readOneLine(Constants.KPROFILES_MODES_NODE);
+            if ("0".equals(mode) || "1".equals(mode)
+                    || "2".equals(mode) || "3".equals(mode)) {
+                mSharedPrefs.edit().putString(Constants.KEY_KPROFILES_MODES, mode).apply();
+            }
+        }
     }
 
     public static void startService(Context context) {
         if (!FileUtils.fileExists(Constants.KPROFILES_MODES_NODE)) return;
-        // Only start the service if at least one per-app override exists
+        // New kernels also need screen state updates without per-app overrides.
+        if (FileUtils.fileExists(Constants.KPROFILES_SCREEN_ON_NODE)
+                || hasPerAppProfiles(context)) {
+            context.startServiceAsUser(new Intent(context, PerAppKprofilesService.class),
+                    UserHandle.CURRENT);
+        }
+    }
+
+    public static boolean hasPerAppProfiles(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String control = prefs.getString(KPROFILES_CONTROL, null);
-        if (control == null || control.isEmpty()) return;
+        if (control == null || control.isEmpty()) return false;
         // Check if any package is actually assigned (any segment contains a comma after prefix)
-        boolean hasOverrides = false;
         for (String segment : control.split(":")) {
             // Each segment is like "kp.none=com.pkg," — has a package if there's a comma
             int eq = segment.indexOf('=');
             if (eq >= 0 && segment.length() > eq + 1) {
-                hasOverrides = true;
-                break;
+                return true;
             }
         }
-        if (hasOverrides) {
-            context.startServiceAsUser(new Intent(context, PerAppKprofilesService.class),
-                    UserHandle.CURRENT);
-        }
+        return false;
     }
 
     // ------------------------------------------------------------------ storage

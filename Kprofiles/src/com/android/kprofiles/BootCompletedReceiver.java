@@ -54,7 +54,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
             String kProfileMode = sharedPrefs.getString(KPROFILES_MODES_KEY, FileUtils.readOneLine(KPROFILES_MODES_NODE));
             FileUtils.writeLine(KPROFILES_MODES_NODE, kProfileMode);
 
-            // Start per-app service if any per-app overrides have been configured.
+            // Synchronize screen state even without per-app overrides.
             KprofilesUtils.startService(context);
         }
     }

@@ -36,6 +36,7 @@ import androidx.preference.SwitchPreferenceCompat;
 
 import com.android.settingslib.widget.SettingsBasePreferenceFragment;
 import com.android.kprofiles.R;
+import com.android.kprofiles.KprofilesUtils;
 import com.android.kprofiles.utils.FileUtils;
 
 public class KprofilesSettingsFragment extends SettingsBasePreferenceFragment implements
@@ -129,6 +130,7 @@ public class KprofilesSettingsFragment extends SettingsBasePreferenceFragment im
     @Override
     public void onResume() {
         super.onResume();
+        KprofilesUtils.startService(requireContext());
         if (kProfilesAutoPreference == null || kProfilesModesPreference == null
                 || kProfilesModesInfo == null) return;
         updateValues();

@@ -9,6 +9,7 @@ public class Constants {
     // which is "kprofiles_modes" (used by KprofilesSettingsFragment).
     public static final String KEY_KPROFILES_MODES = "kprofiles_modes";
     public static final String KPROFILES_MODES_NODE = "/sys/kernel/kprofiles/kp_mode";
+    public static final String KPROFILES_SCREEN_ON_NODE = "/sys/kernel/kprofiles/screen_on";
     public static final String KPROFILES_MODES_INFO = "pref_kprofiles_modes_info";
 
     /* Broadcast action sent when kprofiles mode changes */

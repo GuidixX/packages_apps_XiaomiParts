@@ -12,6 +12,7 @@ import android.service.quicksettings.TileService;
 import androidx.preference.PreferenceManager;
 
 import com.android.kprofiles.Constants;
+import com.android.kprofiles.KprofilesUtils;
 import com.android.kprofiles.utils.FileUtils;
 import com.android.kprofiles.R;
 
@@ -35,6 +36,7 @@ public class KProfilesModesTileService extends TileService {
 
     @Override
     public void onStartListening() {
+        KprofilesUtils.startService(this);
         final IntentFilter filter = new IntentFilter();
         filter.addAction(Constants.ACTION_KPROFILE_SETTING_CHANGED);
         registerReceiver(stateReceiver, filter);

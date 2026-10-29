@@ -278,10 +278,8 @@ public class PerAppKprofilesFragment extends Fragment
             if (currentState != position) {
                 mKprofilesUtils.writePackage(entry.info.packageName, position);
                 mKprofilesUtils.applyIfForeground(entry.info.packageName);
-                // Start the service if an override was just set
-                if (position != KprofilesUtils.STATE_DEFAULT) {
-                    KprofilesUtils.startService(requireContext());
-                }
+                // Also refresh task tracking when the last override is removed.
+                KprofilesUtils.startService(requireContext());
                 notifyDataSetChanged();
             }
         }
